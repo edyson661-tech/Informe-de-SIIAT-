@@ -108,7 +108,9 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-body);
 .main { max-width: 1180px; margin: 0 auto; padding: 28px 32px 56px; }
 
 /* ─── KPI ROW ────────────────────────────────────────── */
-.kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(175px, 1fr)); gap: 14px; margin-bottom: 28px; }
+.kpi-row { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 14px; margin-bottom: 28px; }
+.kpi-card:nth-child(-n+3) { grid-column: span 2; }
+.kpi-card:nth-child(n+4) { grid-column: span 3; }
 .kpi-card {
   background: var(--surface); border-radius: var(--radius);
   box-shadow: var(--shadow); padding: 18px 20px 16px;
@@ -123,6 +125,13 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-body);
 .kpi-value { font-family: var(--font-display); font-size: 2.3rem; font-weight: 700; line-height: 1; color: var(--text); font-variant-numeric: tabular-nums; }
 .kpi-sub   { margin-top: 5px; font-size: .76rem; color: var(--muted); font-family: var(--font-body); }
 .kpi-badge { position: absolute; top: 14px; right: 14px; font-size: 1.3rem; opacity: .14; }
+.filter-panel { display: grid; grid-template-columns: minmax(180px,1fr) minmax(220px,1.3fr) auto 1fr; align-items: end; gap: 12px; margin-bottom: 18px; padding: 16px 18px; background: var(--surface); border: 1px solid var(--border); border-left: 4px solid var(--accent); border-radius: var(--radius); box-shadow: var(--shadow); }
+.filter-field { display: flex; flex-direction: column; gap: 5px; }
+.filter-field label { font-family: var(--font-display); font-size: .66rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.filter-field select { min-height: 38px; width: 100%; padding: 7px 10px; border: 1px solid var(--border); border-radius: 4px; background: var(--surface); color: var(--text); font: inherit; }
+.filter-reset { min-height: 38px; padding: 7px 14px; border: 1px solid var(--primary); border-radius: 4px; background: transparent; color: var(--primary); font: 600 .72rem var(--font-display); cursor: pointer; }
+.filter-reset:hover { background: var(--primary); color: #fff; }
+.filter-summary { align-self: center; justify-self: end; color: var(--muted); font-size: .76rem; text-align: right; }
 
 /* ─── SECTION HEADERS ────────────────────────────────── */
 .section-header { margin: 32px 0 16px; display: flex; align-items: baseline; gap: 12px; }
@@ -139,6 +148,18 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-body);
 .chart-panel-title    { font-family: var(--font-display); font-size: .78rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 3px; }
 .chart-panel-headline { font-family: var(--font-body); font-size: 1rem; font-weight: 600; color: var(--text); margin-bottom: 16px; text-wrap: balance; }
 canvas { display: block; width: 100% !important; }
+.chart-tooltip {
+  position: fixed; z-index: 1000; display: flex; flex-direction: column; gap: 2px;
+  max-width: 260px; padding: 8px 11px; border-left: 4px solid var(--tooltip-color, var(--accent));
+  border-radius: 4px; background: var(--primary); color: #fff;
+  box-shadow: 0 4px 16px rgba(0,16,74,.22); pointer-events: none;
+  opacity: 0; visibility: hidden; transform: translateY(3px);
+  transition: opacity .12s ease, transform .12s ease, visibility .12s;
+  font-family: var(--font-body); font-size: .75rem; line-height: 1.35;
+}
+.chart-tooltip.is-visible { opacity: 1; visibility: visible; transform: translateY(0); }
+.chart-tooltip-title { color: rgba(255,255,255,.72); }
+.chart-tooltip-value { font-weight: 800; }
 .chart-legend { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 12px; }
 .legend-item  { display: flex; align-items: center; gap: 6px; font-family: var(--font-display); font-size: .7rem; font-weight: 500; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); }
 .legend-dot   { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
@@ -190,6 +211,9 @@ tbody tr:hover td { background: var(--surface-2); }
   .header-inner { padding: 26px 14px 22px; }
   .chart-grid-2, .chart-grid-3, .ranking-grid { grid-template-columns: 1fr; }
   .kpi-row { grid-template-columns: repeat(2, 1fr); }
+  .kpi-card:nth-child(n) { grid-column: span 1; }
+  .filter-panel { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .filter-summary { justify-self: start; text-align: left; }
   .pdf-bar { padding: 9px 14px; }
 }
 
@@ -212,7 +236,6 @@ tbody tr:hover td { background: var(--surface-2); }
   <div class="header-inner">
     <div class="header-eyebrow">DNP · Subdirección de Asistencia Técnica · Bienio 2025–2026</div>
     <h1 class="header-title">Análisis de <span>Asistencia Técnica</span><br>Región Caribe 1</h1>
-    <p class="header-subtitle">Actividades realizadas en La Guajira, Atlántico, Cesar y Magdalena, según fecha de cierre, con corte al 31 de octubre de 2026.</p>
     <div class="header-meta">
       <span class="dept-chip"><span class="dot" style="background:#00104A"></span>Cesar</span>
       <span class="dept-chip"><span class="dot" style="background:#6A717F"></span>Magdalena</span>
@@ -232,6 +255,19 @@ tbody tr:hover td { background: var(--surface-2); }
 </div>
 
 <main class="main">
+
+  <section class="filter-panel" aria-label="Filtros geográficos">
+    <div class="filter-field">
+      <label for="filterDepartment">Departamento</label>
+      <select id="filterDepartment"><option value="all">Todos los departamentos</option></select>
+    </div>
+    <div class="filter-field">
+      <label for="filterMunicipality">Municipio</label>
+      <select id="filterMunicipality"><option value="all">Todos los municipios</option></select>
+    </div>
+    <button class="filter-reset" id="resetFilters" type="button">Limpiar filtros</button>
+    <span class="filter-summary" id="filterSummary" aria-live="polite">Mostrando todos los departamentos y municipios</span>
+  </section>
 
   <!-- KPIs -->
   <div class="kpi-row">
@@ -255,8 +291,14 @@ tbody tr:hover td { background: var(--surface-2); }
     </div>
     <div class="kpi-card purple">
       <div class="kpi-label">Municipios atendidos</div>
-      <div class="kpi-value" id="kpiMunicipalities">96</div>
-      <div class="kpi-sub">En los 4 departamentos</div>
+      <div class="kpi-value" id="kpiMunicipalities">92</div>
+      <div class="kpi-sub">Municipios únicos atendidos</div>
+      <div class="kpi-badge">🗺️</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Departamentos atendidos</div>
+      <div class="kpi-value" id="kpiDepartments">4</div>
+      <div class="kpi-sub" id="kpiDepartmentsDetail">Cesar, La Guajira, Atlántico y Magdalena</div>
       <div class="kpi-badge">🗺️</div>
     </div>
     <div class="kpi-card navy">
@@ -399,7 +441,7 @@ tbody tr:hover td { background: var(--surface-2); }
   <div class="section-header">
     <span class="section-title">Ranking de Municipios</span>
     <span class="section-line"></span>
-    <span class="section-note">96 municipios · actividades realizadas hasta el 31 de octubre de 2026</span>
+    <span class="section-note" id="rankingCoverage">92 municipios · actividades realizadas hasta el 31 de octubre de 2026</span>
   </div>
 
   <div class="ranking-grid">
@@ -429,8 +471,8 @@ tbody tr:hover td { background: var(--surface-2); }
 
 <footer class="site-footer">
   <span>DNP · Subdirección de Asistencia Técnica · Región Caribe 1</span>
-  <span id="footerRegistros">Fuente: Sistema Integrado de Información y Asistencia Técnica Territorial · 2.258 AT realizadas · 4 departamentos</span>
-  <span id="footerPeriod">Fecha de cierre · Corte 31 de octubre de 2026</span>
+  <span id="footerRegistros">Fuente: SIIAT</span>
+  <span id="footerPeriod">CORTE: 31 OCTUBRE 2026</span>
 </footer>
 
 <!-- ── MODAL: EDITOR DE DATOS ────────────────────────── -->
@@ -461,6 +503,13 @@ tbody tr:hover td { background: var(--surface-2); }
 /* ─── DATOS ─────────────────────────────────────────────── */
 const MESES = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
 const MESES_FULL = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+const TIPO_KEYS = [
+  'Disp. SGR','Mesa Técnica','Rev. Saldos','Rev. Proyecto',
+  'Rev. Iniciativa','Rev. Ajustes','Asist. Proyecto Tipo','Asist. Grupos Étnicos',
+];
+const FILTER_GEO = [{"dept":"magdalena","isDepartment":false,"name":"Plato"},{"dept":"cesar","isDepartment":false,"name":"Pailitas"},{"dept":"atlantico","isDepartment":false,"name":"Barranquilla"},{"dept":"atlantico","isDepartment":false,"name":"Campo de La Cruz"},{"dept":"magdalena","isDepartment":false,"name":"San Zenon"},{"dept":"magdalena","isDepartment":false,"name":"El Piñon"},{"dept":"cesar","isDepartment":true,"name":"Cesar (Depto)"},{"dept":"magdalena","isDepartment":false,"name":"Sabanas de San Angel"},{"dept":"atlantico","isDepartment":false,"name":"Galapa"},{"dept":"magdalena","isDepartment":false,"name":"Cienaga"},{"dept":"magdalena","isDepartment":false,"name":"Pijiño del Carmen"},{"dept":"magdalena","isDepartment":false,"name":"Pedraza"},{"dept":"cesar","isDepartment":false,"name":"La Jagua de Ibirico"},{"dept":"magdalena","isDepartment":false,"name":"Cerro San Antonio"},{"dept":"atlantico","isDepartment":false,"name":"Soledad"},{"dept":"atlantico","isDepartment":false,"name":"Usiacuri"},{"dept":"magdalena","isDepartment":false,"name":"San Sebastian de Buenavista"},{"dept":"magdalena","isDepartment":false,"name":"El Banco"},{"dept":"magdalena","isDepartment":false,"name":"Sitionuevo"},{"dept":"guajira","isDepartment":false,"name":"Dibulla"},{"dept":"guajira","isDepartment":false,"name":"Fonseca"},{"dept":"magdalena","isDepartment":false,"name":"Nueva Granada"},{"dept":"guajira","isDepartment":true,"name":"Guajira (Depto)"},{"dept":"guajira","isDepartment":false,"name":"Villanueva"},{"dept":"atlantico","isDepartment":false,"name":"Candelaria"},{"dept":"cesar","isDepartment":false,"name":"Gamarra"},{"dept":"magdalena","isDepartment":false,"name":"Chivolo"},{"dept":"cesar","isDepartment":false,"name":"Chimichagua"},{"dept":"guajira","isDepartment":false,"name":"El Molino"},{"dept":"atlantico","isDepartment":false,"name":"Luruaco"},{"dept":"guajira","isDepartment":false,"name":"La Jagua del Pilar"},{"dept":"cesar","isDepartment":false,"name":"San Alberto"},{"dept":"atlantico","isDepartment":false,"name":"Palmar de Varela"},{"dept":"magdalena","isDepartment":false,"name":"Salamina"},{"dept":"atlantico","isDepartment":false,"name":"Juan de Acosta"},{"dept":"cesar","isDepartment":false,"name":"San Martin"},{"dept":"magdalena","isDepartment":true,"name":"Magdalena (Depto)"},{"dept":"magdalena","isDepartment":false,"name":"Guamal"},{"dept":"magdalena","isDepartment":false,"name":"Pivijay"},{"dept":"magdalena","isDepartment":false,"name":"Algarrobo"},{"dept":"cesar","isDepartment":false,"name":"Manaure"},{"dept":"atlantico","isDepartment":false,"name":"Manati"},{"dept":"atlantico","isDepartment":false,"name":"Tubara"},{"dept":"atlantico","isDepartment":true,"name":"Atlantico (Depto)"},{"dept":"cesar","isDepartment":false,"name":"Pueblo Bello"},{"dept":"magdalena","isDepartment":false,"name":"El Reten"},{"dept":"magdalena","isDepartment":false,"name":"Fundacion"},{"dept":"atlantico","isDepartment":false,"name":"Santo Tomas"},{"dept":"atlantico","isDepartment":false,"name":"Sabanalarga"},{"dept":"cesar","isDepartment":false,"name":"Aguachica"},{"dept":"guajira","isDepartment":false,"name":"Albania"},{"dept":"guajira","isDepartment":false,"name":"Riohacha"},{"dept":"magdalena","isDepartment":false,"name":"Tenerife"},{"dept":"cesar","isDepartment":false,"name":"Gonzalez"},{"dept":"cesar","isDepartment":false,"name":"Becerril"},{"dept":"cesar","isDepartment":false,"name":"El Paso"},{"dept":"atlantico","isDepartment":false,"name":"Sabanagrande"},{"dept":"atlantico","isDepartment":false,"name":"Suan"},{"dept":"atlantico","isDepartment":false,"name":"Baranoa"},{"dept":"magdalena","isDepartment":false,"name":"Ariguani"},{"dept":"cesar","isDepartment":false,"name":"Curumani"},{"dept":"magdalena","isDepartment":false,"name":"Santa Barbara de Pinto"},{"dept":"cesar","isDepartment":false,"name":"Astrea"},{"dept":"cesar","isDepartment":false,"name":"Tamalameque"},{"dept":"guajira","isDepartment":false,"name":"Manaure"},{"dept":"magdalena","isDepartment":false,"name":"Santa Ana"},{"dept":"atlantico","isDepartment":false,"name":"Santa Lucia"},{"dept":"guajira","isDepartment":false,"name":"Uribia"},{"dept":"guajira","isDepartment":false,"name":"Distraccion"},{"dept":"guajira","isDepartment":false,"name":"Urumita"},{"dept":"cesar","isDepartment":false,"name":"Bosconia"},{"dept":"magdalena","isDepartment":false,"name":"Santa Marta"},{"dept":"atlantico","isDepartment":false,"name":"Piojo"},{"dept":"magdalena","isDepartment":false,"name":"Zona Bananera"},{"dept":"guajira","isDepartment":false,"name":"San Juan del Cesar"},{"dept":"cesar","isDepartment":false,"name":"San Diego"},{"dept":"cesar","isDepartment":false,"name":"La Gloria"},{"dept":"guajira","isDepartment":false,"name":"Hatonuevo"},{"dept":"cesar","isDepartment":false,"name":"El Copey"},{"dept":"magdalena","isDepartment":false,"name":"Puebloviejo"},{"dept":"magdalena","isDepartment":false,"name":"Aracataca"},{"dept":"cesar","isDepartment":false,"name":"Rio de Oro"},{"dept":"magdalena","isDepartment":false,"name":"Remolino"},{"dept":"atlantico","isDepartment":false,"name":"Malambo"},{"dept":"cesar","isDepartment":false,"name":"Pelaya"},{"dept":"cesar","isDepartment":false,"name":"La Paz"},{"dept":"guajira","isDepartment":false,"name":"Maicao"},{"dept":"atlantico","isDepartment":false,"name":"Polonuevo"},{"dept":"cesar","isDepartment":false,"name":"Chiriguana"},{"dept":"atlantico","isDepartment":false,"name":"Puerto Colombia"},{"dept":"atlantico","isDepartment":false,"name":"Ponedera"},{"dept":"magdalena","isDepartment":false,"name":"Concordia"},{"dept":"magdalena","isDepartment":false,"name":"Zapayan"},{"dept":"atlantico","isDepartment":false,"name":"Repelon"},{"dept":"cesar","isDepartment":false,"name":"Agustin Codazzi"},{"dept":"guajira","isDepartment":false,"name":"Barrancas"},{"dept":"cesar","isDepartment":false,"name":"Valledupar"}];
+const FILTER_DETAIL = '0,0,0,1;0,1,0,1;0,2,3,2;0,3,1,1;0,3,3,1;0,4,0,1;0,4,1,1;0,4,2,1;0,4,3,1;0,5,1,3;0,8,0,1;0,9,2,1;0,10,1,1;0,12,0,1;0,13,0,1;0,13,1,1;0,15,1,1;0,18,0,1;0,18,2,1;0,19,0,1;0,19,1,4;0,20,0,1;0,20,1,3;0,21,0,1;0,21,1,10;1,0,0,1;1,1,3,1;1,2,0,1;1,4,0,1;1,4,1,2;1,9,1,1;1,11,1,1;1,12,1,1;1,14,1,1;1,16,0,1;1,18,0,3;1,19,1,1;1,20,4,1;1,21,0,1;2,0,0,1;2,1,0,1;2,3,0,2;2,4,0,1;2,4,2,1;2,8,0,1;2,8,1,2;2,9,1,1;2,14,0,1;2,14,1,1;2,14,3,2;2,15,0,1;2,16,0,1;2,16,1,1;2,16,3,2;2,17,0,1;2,18,0,1;2,20,0,2;2,20,2,1;2,21,1,3;3,1,0,2;3,4,0,1;3,6,3,1;3,10,0,2;3,10,2,1;3,14,2,1;3,17,0,1;3,19,0,2;3,19,2,1;4,0,0,1;4,1,0,1;4,4,2,1;4,18,0,1;4,19,1,1;4,21,0,1;5,0,0,1;5,1,0,1;5,2,0,1;5,10,3,1;5,11,1,1;5,15,1,2;5,16,0,1;5,18,0,3;5,21,0,1;6,0,0,1;6,1,0,1;6,1,1,2;6,2,0,2;6,2,1,1;6,2,3,1;6,3,0,1;6,3,1,2;6,4,0,2;6,4,1,8;6,6,1,5;6,7,1,1;6,8,0,1;6,9,0,1;6,9,1,3;6,10,1,2;6,11,1,3;6,12,1,4;6,13,1,2;6,13,3,1;6,14,0,1;6,14,1,3;6,14,3,1;6,15,1,3;6,16,0,1;6,16,1,1;6,17,0,2;6,17,1,1;6,18,0,3;6,18,1,3;6,18,2,1;6,20,1,2;6,21,1,1;6,21,3,1;7,0,0,1;7,1,0,1;7,3,0,1;7,18,0,2;7,21,0,1;8,1,0,2;8,4,0,2;8,4,2,1;8,4,4,1;8,5,1,1;8,13,0,1;8,15,0,1;8,16,0,1;8,17,0,1;8,18,0,1;8,18,2,1;8,20,0,1;8,21,2,1;9,0,0,1;9,1,0,1;9,1,1,1;9,2,1,2;9,2,6,1;9,3,0,1;9,3,1,2;9,4,1,3;9,4,2,1;9,4,3,1;9,5,1,1;9,6,1,2;9,7,1,2;9,8,0,1;9,8,1,1;9,9,0,1;9,9,2,1;9,13,0,2;9,13,2,1;9,14,1,1;9,15,1,2;9,16,0,1;9,16,1,1;9,18,0,3;9,18,1,2;9,19,0,1;9,19,1,1;9,20,1,1;9,21,0,2;9,21,7,1;10,0,0,1;10,1,0,1;10,2,1,1;10,3,1,1;10,3,3,1;10,7,1,2;10,7,3,2;10,10,0,1;10,14,2,1;10,15,1,1;10,18,0,1;10,21,0,1;11,0,0,1;11,1,0,1;11,3,0,1;11,3,2,1;11,15,1,1;11,16,0,1;11,18,0,1;11,21,0,1;12,0,0,1;12,3,0,2;12,3,4,1;12,4,1,1;12,8,0,1;12,8,1,1;12,9,0,1;12,9,1,3;12,11,1,3;12,13,0,2;12,13,1,1;12,14,1,1;12,15,1,3;12,15,2,1;12,16,0,1;12,16,1,3;12,17,1,2;12,18,0,3;12,18,1,4;12,19,1,3;12,20,0,1;12,20,1,8;12,21,0,1;12,21,1,4;13,0,0,1;13,1,0,1;13,3,0,1;13,10,0,1;13,10,1,2;13,13,0,1;13,13,2,1;13,14,1,1;13,15,1,1;13,18,0,1;13,18,1,2;13,19,2,1;14,3,0,1;15,0,0,1;15,0,3,1;15,1,0,1;15,2,3,1;15,4,0,1;15,4,1,1;15,4,2,1;15,6,1,2;15,8,3,1;15,14,2,1;15,15,0,1;15,18,0,2;15,18,2,2;15,20,0,1;16,0,0,1;16,3,0,1;16,5,1,1;16,7,1,2;16,11,0,1;16,13,0,1;16,18,0,1;16,21,0,1;16,21,1,1;17,0,0,1;17,1,0,2;17,4,0,1;17,8,0,1;17,9,2,1;17,12,0,1;17,13,0,1;17,13,1,1;17,13,2,1;17,15,1,3;17,16,0,1;17,16,1,1;17,19,0,1;17,19,1,1;17,21,0,1;17,21,1,4;18,0,0,1;18,2,1,2;18,2,3,1;18,8,0,1;18,10,0,1;18,10,2,1;18,11,1,1;18,11,4,1;18,13,0,1;18,13,1,2;18,13,2,1;18,16,3,1;18,17,0,1;18,18,0,2;18,18,1,2;18,19,1,1;18,19,2,1;19,1,0,1;19,1,1,1;19,2,0,1;19,4,0,1;19,4,1,1;19,7,1,1;19,8,0,1;19,9,0,1;19,11,1,3;19,12,1,1;19,13,0,2;19,13,2,1;19,15,1,1;19,16,1,2;19,17,1,1;19,18,0,3;19,18,2,1;19,19,0,1;19,20,0,2;20,0,0,1;20,1,1,3;20,2,1,1;20,3,0,1;20,3,1,4;20,4,1,1;20,5,1,1;20,9,0,1;20,9,1,2;20,10,1,1;20,11,1,1;20,12,1,1;20,13,0,1;20,14,0,2;20,14,1,2;20,15,1,1;20,16,0,1;20,16,1,1;20,18,0,2;20,18,2,1;20,19,1,2;20,20,0,1;20,20,1,2;21,0,0,1;21,1,0,1;21,2,0,1;21,4,2,1;21,5,3,1;21,6,1,1;21,10,0,1;21,10,1,1;21,10,2,1;21,12,1,1;21,13,0,1;21,14,1,1;21,15,1,1;21,16,0,1;21,18,0,1;21,19,2,1;21,20,1,1;21,21,0,1;21,21,3,1;21,21,4,1;22,0,0,1;22,1,1,1;22,1,3,1;22,2,0,1;22,2,3,2;22,3,0,3;22,3,1,2;22,4,1,2;22,4,3,1;22,5,3,1;22,6,1,3;22,6,3,3;22,7,0,1;22,7,1,2;22,8,1,3;22,9,0,1;22,9,1,5;22,9,3,4;22,10,0,2;22,10,1,5;22,11,1,1;22,11,4,1;22,12,1,4;22,12,3,1;22,12,5,1;22,13,0,1;22,13,1,2;22,14,0,1;22,14,1,3;22,15,1,3;22,15,3,1;22,16,0,3;22,16,3,1;22,18,0,1;22,18,1,1;22,18,2,1;22,19,0,1;22,19,1,5;22,19,3,2;22,20,0,3;22,20,1,1;22,20,3,1;22,21,1,7;22,21,3,2;23,1,0,1;23,4,1,1;23,6,1,1;23,13,2,1;23,17,0,1;23,18,0,1;23,18,2,1;24,0,0,1;24,1,0,1;24,3,2,1;24,9,0,1;24,11,1,1;24,14,1,2;24,15,0,1;24,15,2,1;24,16,0,1;24,17,0,1;24,18,0,1;24,19,0,1;24,21,1,1;24,21,4,1;25,2,0,1;25,3,1,1;25,3,3,2;25,4,3,1;25,6,1,1;25,6,3,1;25,8,0,1;25,10,1,2;25,12,1,2;25,13,0,1;25,13,1,1;25,14,1,2;25,15,1,2;25,16,0,1;25,17,0,1;25,18,1,1;25,19,0,2;25,21,0,1;26,0,0,1;26,1,0,2;26,16,1,2;26,16,3,1;26,18,0,1;26,18,1,1;26,21,0,1;27,0,0,1;27,2,0,1;27,3,1,1;27,3,3,1;27,4,1,1;27,7,1,1;27,7,3,1;27,8,2,1;27,9,1,1;27,10,1,1;27,11,1,1;27,12,2,1;27,16,0,1;27,18,0,1;27,19,1,1;27,20,1,1;27,21,0,1;28,0,0,1;28,1,1,1;28,4,0,1;28,4,1,1;28,8,1,1;28,9,1,1;28,10,1,1;28,10,3,1;28,11,1,1;28,13,0,1;28,13,2,1;28,14,1,2;28,15,1,1;28,16,0,3;28,16,1,2;28,18,0,2;28,18,2,1;29,0,0,1;29,0,1,1;29,2,0,1;29,3,0,1;29,4,0,1;29,4,2,1;29,4,4,1;29,11,1,1;29,11,4,1;29,15,2,1;29,17,0,1;29,17,1,2;29,18,0,1;29,18,2,1;29,18,5,2;29,19,1,2;29,21,0,1;30,0,0,1;30,14,0,1;30,16,0,1;30,16,1,1;30,17,3,2;30,18,0,1;30,18,2,1;31,0,0,1;31,3,0,2;31,4,1,1;31,8,0,1;31,10,2,1;31,11,1,1;31,13,0,1;31,13,1,2;31,15,1,2;31,16,0,1;31,18,0,2;31,18,1,2;31,18,2,1;31,20,0,1;31,21,0,1;31,21,1,1;32,0,0,1;32,1,0,1;32,4,0,1;32,4,1,1;32,4,2,1;32,6,1,1;32,8,1,2;32,8,3,1;32,9,1,3;32,11,2,1;32,14,2,1;32,17,0,1;32,18,0,1;32,18,2,1;32,20,0,3;32,20,2,1;33,0,0,1;33,1,0,1;33,1,4,1;33,3,0,1;33,5,3,1;33,6,3,1;33,13,0,1;33,16,0,1;33,18,0,2;33,18,1,1;34,2,0,2;34,4,0,1;34,4,2,1;34,5,0,1;34,9,2,1;34,15,2,1;34,16,0,1;34,19,0,2;34,19,2,2;34,20,2,1;34,21,3,1;35,1,0,1;35,1,1,2;35,3,0,2;35,3,1,1;35,4,0,1;35,4,3,2;35,7,3,1;35,8,0,1;35,9,1,4;35,10,1,2;35,10,2,1;35,10,3,1;35,11,1,2;35,13,0,1;35,13,1,2;35,13,2,3;35,14,1,4;35,14,3,1;35,15,1,5;35,16,0,2;35,16,1,2;35,16,2,2;35,17,1,2;35,17,3,1;35,18,0,2;35,18,1,1;35,19,1,1;35,19,4,1;35,20,0,1;35,20,1,2;35,20,4,1;35,21,0,1;35,21,1,1;36,0,1,1;36,3,0,2;36,3,1,1;36,4,0,1;36,4,1,2;36,5,0,1;36,6,1,2;36,7,1,3;36,9,0,2;36,9,1,1;36,10,1,1;36,10,3,1;36,11,1,3;36,13,1,1;36,14,0,1;36,14,1,1;36,15,1,3;36,16,0,1;36,16,1,2;36,16,3,1;36,17,0,1;36,17,1,2;36,18,0,1;36,18,1,2;36,18,2,1;36,18,3,1;36,19,1,2;36,19,3,1;36,20,1,5;36,20,3,2;36,21,0,1;37,0,0,1;37,3,0,1;37,10,3,2;37,11,0,1;37,13,0,1;37,14,1,1;37,15,1,2;37,17,1,2;37,18,0,1;37,18,1,1;37,18,4,1;37,19,3,1;37,21,0,1;38,0,0,1;38,0,1,1;38,1,0,1;38,2,0,1;38,4,1,1;38,4,3,1;38,6,1,1;38,6,3,1;38,7,1,1;38,16,0,1;38,16,2,1;38,17,2,1;38,18,0,2;38,18,4,1;38,19,0,1;38,21,0,1;39,0,0,1;39,1,0,1;39,2,0,1;39,11,0,1;39,13,0,1;39,15,2,1;39,16,0,1;39,18,0,2;39,19,0,1;39,19,2,1;39,21,0,1;40,0,0,1;40,1,1,6;40,2,1,2;40,3,0,1;40,3,1,2;40,4,1,3;40,6,1,1;40,7,1,1;40,9,0,1;40,10,1,2;40,14,0,1;40,14,1,1;40,15,1,1;40,16,0,1;40,16,1,3;40,19,0,2;40,20,1,2;40,21,1,1;41,0,0,1;41,1,0,1;41,4,0,1;41,4,2,1;41,9,0,1;41,9,2,1;41,16,0,1;41,16,2,1;41,19,0,1;41,19,2,1;41,20,0,1;42,0,0,1;42,1,0,1;42,4,0,3;42,4,2,1;42,6,3,1;42,9,2,1;42,11,1,2;42,14,2,1;42,16,0,1;42,19,0,1;42,19,2,1;42,20,0,1;42,20,1,1;42,21,2,1;43,0,0,1;43,0,1,4;43,1,1,1;43,1,3,1;43,2,1,1;43,3,0,1;43,3,1,2;43,4,0,1;43,4,1,2;43,4,3,1;43,5,1,3;43,6,1,1;43,8,0,2;43,8,1,1;43,9,1,1;43,10,1,3;43,11,1,1;43,13,1,2;43,14,1,1;43,15,1,2;43,16,0,2;43,16,3,1;43,17,0,2;43,17,1,1;43,17,3,2;43,18,0,1;43,18,2,1;43,18,3,1;43,19,1,1;43,19,3,2;43,20,1,3;43,21,1,2;44,0,0,1;44,1,1,7;44,3,0,1;44,3,1,3;44,3,6,1;44,6,1,3;44,7,1,4;44,8,1,2;44,9,0,1;44,10,1,1;44,11,1,1;44,13,0,1;44,15,1,2;44,16,0,1;44,18,0,3;44,20,1,2;44,21,0,1;44,21,1,2;45,0,0,1;45,1,0,1;45,17,0,1;45,18,0,1;45,19,2,1;46,0,0,1;46,0,1,1;46,1,0,2;46,2,1,1;46,3,0,1;46,3,1,2;46,4,0,1;46,6,1,2;46,7,3,1;46,9,0,1;46,9,2,1;46,10,1,2;46,13,0,1;46,15,1,2;46,16,1,3;46,17,1,4;46,18,0,1;46,21,0,1;47,0,0,1;47,2,0,1;47,3,2,1;47,3,3,1;47,4,0,1;47,4,1,1;47,5,1,1;47,7,1,1;47,7,2,1;47,8,1,1;47,10,2,1;47,10,4,1;47,14,2,1;47,15,0,1;47,16,0,1;47,18,0,1;47,18,2,1;47,19,0,1;47,19,1,1;47,19,3,1;47,20,0,1;48,0,0,1;48,2,0,1;48,3,1,2;48,3,2,1;48,3,4,1;48,4,0,1;48,5,1,1;48,8,0,1;48,8,3,1;48,9,2,1;48,12,1,1;48,13,0,3;48,13,1,1;48,13,2,1;48,14,0,3;48,15,1,5;48,16,0,2;48,18,0,1;48,18,2,1;48,19,0,3;48,20,0,1;48,21,0,2;49,3,0,1;49,4,1,1;49,8,0,1;49,13,0,1;49,15,1,2;49,16,0,1;49,19,0,2;49,21,0,1;49,21,1,1;50,0,0,1;50,2,0,2;50,3,0,1;50,4,0,1;50,4,3,1;50,5,1,4;50,8,0,1;50,13,1,1;50,14,0,1;50,16,0,1;50,16,1,1;50,17,0,1;50,17,2,1;50,18,0,1;50,18,1,1;50,18,2,1;50,19,0,2;50,20,0,2;51,1,0,1;51,1,1,1;51,2,0,1;51,3,1,2;51,4,0,1;51,4,1,3;51,5,1,1;51,6,1,1;51,8,0,1;51,9,0,1;51,9,1,1;51,14,0,1;51,16,0,1;51,17,0,1;51,18,0,1;51,18,1,1;51,19,0,1;51,20,0,2;51,21,1,1;52,0,0,1;52,1,0,1;52,2,0,1;52,2,3,1;52,3,3,2;52,4,0,1;52,11,2,1;52,13,0,1;52,13,2,1;52,19,0,1;52,19,1,1;52,19,2,1;52,21,0,1;53,1,0,2;53,2,0,1;53,2,1,1;53,4,1,1;53,5,3,1;53,7,0,1;53,14,1,1;53,16,0,1;53,18,0,1;53,21,0,1;53,21,1,1;54,0,0,1;54,1,1,3;54,3,0,2;54,3,1,4;54,4,0,2;54,4,1,5;54,4,4,1;54,5,1,5;54,5,4,6;54,6,1,5;54,6,4,1;54,7,0,1;54,7,1,4;54,8,0,1;54,8,1,1;54,9,0,1;54,9,1,3;54,10,1,1;54,11,1,1;54,12,1,1;54,13,0,2;54,13,1,2;54,14,0,2;54,14,1,6;54,15,1,8;54,16,0,3;54,16,1,12;54,17,1,7;54,18,0,3;54,18,1,3;54,19,1,2;54,20,0,1;54,20,1,2;54,21,0,1;54,21,1,1;55,1,0,1;55,4,0,2;55,5,1,1;55,13,0,1;55,13,2,1;55,15,0,1;55,18,0,2;55,18,1,1;55,20,0,1;55,20,1,1;56,0,0,1;56,1,0,1;56,4,0,1;56,4,2,1;56,5,1,1;56,7,3,1;56,9,2,1;56,9,3,1;56,10,1,6;56,12,1,1;56,15,0,1;56,16,0,1;56,17,2,1;56,19,0,1;56,19,2,1;56,21,0,1;56,21,2,1;57,1,0,2;57,4,0,1;57,16,0,1;57,16,2,1;57,17,0,1;57,18,0,1;57,18,2,1;57,20,0,1;58,0,0,1;58,3,0,2;58,3,4,1;58,4,2,1;58,16,0,1;58,18,0,1;58,18,2,1;58,21,0,1;59,0,0,1;59,1,0,2;59,1,1,2;59,1,3,1;59,4,0,1;59,4,1,2;59,4,2,1;59,4,3,1;59,6,1,1;59,8,0,1;59,12,0,1;59,13,0,1;59,13,1,3;59,13,4,2;59,14,1,2;59,16,0,2;59,16,1,1;59,17,1,1;59,17,3,1;59,18,0,2;59,18,1,3;59,19,1,2;59,19,2,1;59,20,1,4;59,21,0,1;59,21,1,3;60,0,0,1;60,1,0,1;60,2,1,1;60,4,0,1;60,10,1,1;60,10,2,1;60,15,1,1;60,16,0,1;60,17,1,1;60,18,0,1;61,0,0,1;61,1,0,1;61,3,0,1;61,3,1,2;61,4,0,1;61,10,0,1;61,13,0,1;61,18,0,2;61,19,0,1;61,21,0,1;62,0,0,1;62,2,1,1;62,8,0,1;62,13,0,1;62,13,1,1;62,14,1,1;62,16,0,1;62,18,0,2;62,21,0,1;63,0,0,1;63,1,0,1;63,14,1,1;63,18,0,3;63,21,0,1;64,0,0,1;64,2,0,1;64,2,3,1;64,4,0,1;64,4,3,1;64,5,1,5;64,6,3,1;64,7,3,1;64,8,0,1;64,8,3,1;64,9,0,1;64,9,1,2;64,10,3,1;64,11,1,2;64,11,3,2;64,12,1,1;64,13,0,1;64,14,0,1;64,15,1,1;64,16,0,1;64,17,3,2;64,18,0,3;64,19,3,3;64,20,0,3;64,20,1,1;64,21,3,2;65,0,0,1;65,1,0,1;65,1,1,1;65,4,2,1;65,16,0,1;65,16,1,2;65,16,2,1;65,17,2,1;65,18,0,1;65,19,2,1;65,20,1,1;65,20,2,1;65,21,0,1;66,0,0,1;66,2,0,1;66,2,3,1;66,3,3,1;66,4,1,2;66,5,3,1;66,10,2,1;66,14,1,1;66,14,2,1;66,16,0,1;66,18,0,1;66,18,2,1;66,20,0,1;67,0,0,1;67,1,1,1;67,2,0,1;67,5,1,3;67,5,3,2;67,7,1,1;67,8,0,1;67,9,0,1;67,10,1,1;67,11,3,1;67,13,0,1;67,13,2,1;67,16,0,3;67,16,1,1;67,17,0,1;67,18,0,1;67,19,0,1;67,19,1,1;67,20,0,1;67,20,1,1;68,0,0,1;68,1,1,2;68,1,3,1;68,3,1,1;68,4,0,1;68,5,1,1;68,6,1,1;68,8,1,1;68,9,1,1;68,13,2,1;68,14,0,1;68,16,0,1;68,17,0,1;68,18,0,1;68,20,0,2;68,21,1,3;69,0,1,1;69,5,1,1;69,8,1,2;69,9,1,1;69,12,3,1;69,13,1,1;69,14,0,1;69,16,0,1;69,18,0,1;69,18,1,1;70,0,1,1;70,1,0,1;70,4,1,1;70,9,0,1;70,11,2,1;70,16,0,1;70,18,0,5;70,18,1,2;70,19,1,1;70,20,1,1;70,21,0,1;71,0,0,1;71,1,0,2;71,1,1,3;71,2,1,5;71,3,0,1;71,3,1,7;71,3,3,2;71,4,0,1;71,4,1,2;71,6,1,2;71,7,1,3;71,8,0,1;71,8,1,1;71,9,0,1;71,9,1,1;71,11,0,1;71,11,1,2;71,13,0,1;71,14,1,3;71,15,1,2;71,16,0,1;71,16,1,3;71,17,0,1;71,17,1,2;71,18,0,2;71,19,0,1;71,19,1,1;71,20,1,1;71,21,0,1;71,21,1,2;72,0,0,1;72,1,0,1;72,2,3,1;72,3,0,1;72,4,1,1;72,4,2,1;72,10,2,1;72,15,2,1;72,17,0,1;72,18,0,1;72,18,2,1;72,20,0,1;72,21,2,1;73,0,0,1;73,1,0,1;73,1,1,1;73,4,0,1;73,4,1,1;73,4,2,1;73,4,3,1;73,9,2,1;73,14,1,1;73,14,2,1;73,14,3,1;73,18,0,2;73,18,2,1;73,19,0,1;73,20,1,6;73,21,0,1;74,1,0,1;74,1,1,4;74,2,3,1;74,3,0,3;74,3,1,4;74,4,0,1;74,4,1,2;74,5,1,4;74,5,3,1;74,6,1,2;74,7,3,1;74,9,0,1;74,9,3,1;74,11,1,2;74,13,0,2;74,13,1,1;74,13,2,1;74,14,0,1;74,14,1,1;74,15,1,2;74,16,0,2;74,16,1,1;74,17,0,1;74,18,0,2;74,18,2,1;75,1,0,1;75,1,1,3;75,2,0,1;75,3,0,1;75,6,1,1;75,8,1,2;75,9,0,1;75,9,1,1;75,10,1,1;75,11,1,2;75,12,1,2;75,13,0,1;75,13,1,1;75,14,0,1;75,14,1,2;75,15,1,6;75,16,0,1;75,16,1,3;75,17,0,1;75,17,1,1;75,18,0,1;75,19,0,2;75,20,1,1;75,21,0,1;76,0,0,1;76,4,2,1;76,10,1,1;76,10,3,1;76,18,0,3;76,21,0,1;77,0,0,1;77,2,0,1;77,4,0,1;77,5,0,1;77,5,1,2;77,8,0,1;77,8,1,1;77,9,0,1;77,13,0,1;77,13,1,1;77,13,2,1;77,14,0,1;77,14,1,2;77,15,0,1;77,17,0,1;77,18,0,2;77,19,0,1;77,20,0,1;77,21,1,2;78,1,0,1;78,2,0,1;78,4,0,1;78,4,2,1;78,10,2,1;78,16,0,1;78,17,1,1;78,18,0,1;79,0,0,1;79,0,4,1;79,1,0,1;79,2,0,1;79,9,4,1;79,10,1,1;79,17,3,1;79,18,0,1;79,19,2,1;80,0,0,1;80,1,0,2;80,1,1,2;80,2,1,4;80,2,3,1;80,3,0,1;80,3,1,1;80,4,0,1;80,4,1,1;80,6,1,2;80,7,1,1;80,11,2,1;80,13,0,1;80,14,1,3;80,15,0,1;80,15,1,3;80,15,2,1;80,16,1,1;80,17,1,3;80,18,0,3;80,18,1,1;80,19,0,1;80,19,1,2;80,21,0,1;81,0,0,1;81,1,0,1;81,2,0,1;81,2,1,1;81,3,0,1;81,8,0,1;81,13,0,1;81,13,1,4;81,13,2,1;81,15,1,1;81,16,0,1;81,16,1,1;81,18,0,1;81,18,1,3;81,18,3,1;81,19,0,2;81,19,1,1;81,20,1,1;81,21,1,1;82,0,0,1;82,3,0,1;82,3,2,1;82,8,0,1;82,11,2,1;82,12,0,1;82,13,0,1;82,14,1,4;82,15,1,1;82,17,1,2;82,18,0,1;82,21,0,1;83,0,0,1;83,2,0,1;83,3,2,1;83,4,0,2;83,9,1,3;83,9,3,1;83,15,2,1;83,18,0,1;83,18,2,1;83,19,0,1;83,20,0,2;83,21,1,1;84,0,0,1;84,1,0,1;84,1,3,1;84,2,1,1;84,5,1,1;84,6,1,1;84,6,3,1;84,16,0,1;84,18,0,3;84,21,0,1;85,0,0,1;85,1,1,4;85,2,1,1;85,3,0,1;85,3,1,6;85,4,1,1;85,5,1,2;85,6,1,1;85,7,1,2;85,8,1,2;85,9,1,2;85,10,1,1;85,11,1,1;85,12,1,1;85,13,0,1;85,13,1,1;85,14,0,1;85,14,1,3;85,15,1,3;85,16,0,1;85,16,1,2;85,18,0,3;85,18,1,1;85,19,0,1;85,20,4,1;85,21,0,1;86,0,0,1;86,2,0,1;86,4,0,2;86,4,1,1;86,4,3,1;86,5,1,1;86,6,0,1;86,6,1,1;86,6,3,1;86,7,3,1;86,8,0,1;86,9,0,1;86,9,3,1;86,10,3,2;86,11,3,1;86,13,2,1;86,14,0,2;86,14,1,1;86,14,3,1;86,15,1,1;86,16,0,1;86,17,1,1;86,17,3,1;86,18,0,4;86,19,0,1;86,20,0,2;86,20,3,1;87,0,0,1;87,1,0,1;87,2,3,1;87,5,0,1;87,5,1,1;87,5,2,1;87,7,1,2;87,10,2,1;87,15,0,1;87,15,2,1;87,15,5,1;87,16,0,1;87,18,0,1;87,20,0,1;87,21,2,1;88,0,0,1;88,1,0,1;88,1,1,1;88,3,0,1;88,8,0,1;88,10,2,1;88,13,0,1;88,13,1,1;88,14,1,1;88,16,0,1;88,17,1,1;88,18,0,3;88,21,0,1;89,3,0,1;89,4,0,1;89,4,2,1;89,13,0,1;89,13,2,1;89,14,0,1;89,19,0,1;89,19,2,1;89,21,0,1;90,0,0,1;90,2,0,1;90,3,2,1;90,8,0,1;90,10,2,1;90,12,0,1;90,13,0,1;90,14,1,1;90,15,0,1;90,15,2,1;90,16,0,1;90,16,1,1;90,16,3,1;90,19,0,2;90,19,2,1;91,0,0,1;91,1,0,1;91,3,0,1;91,13,0,1;91,13,1,1;91,13,4,1;91,14,1,1;91,14,3,1;91,15,1,1;91,16,0,1;91,18,0,2;91,18,1,2;91,19,1,1;91,19,2,1;91,21,0,1;91,21,1,2;92,0,0,1;92,2,1,2;92,10,0,1;92,13,0,1;92,18,0,1;92,19,2,1;93,0,0,1;93,1,0,1;93,4,0,3;93,4,2,1;93,10,2,1;93,11,1,1;93,16,0,1;93,16,2,1;93,17,0,1;93,17,1,1;93,18,0,2;93,18,2,1;93,20,0,1;94,0,0,1;94,1,1,3;94,2,0,1;94,2,1,5;94,2,2,1;94,3,0,1;94,3,1,1;94,3,4,1;94,4,0,2;94,4,1,1;94,5,1,5;94,5,4,1;94,6,1,2;94,7,1,3;94,7,3,1;94,8,0,1;94,8,1,2;94,9,0,1;94,9,1,4;94,11,1,3;94,12,1,1;94,13,0,1;94,14,1,3;94,15,1,3;94,16,0,1;94,16,1,3;94,18,0,3;94,19,1,2;94,20,0,1;94,20,1,4;94,21,0,3;94,21,1,5;95,1,0,1;95,2,0,1;95,4,0,1;95,5,1,1;95,8,0,1;95,8,3,1;95,10,3,1;95,14,0,1;95,16,0,3;95,16,1,2;95,18,0,2;95,18,2,1;95,19,0,1;95,19,1,4;95,20,0,1;95,20,1,3;95,21,1,2;96,0,0,1;96,2,1,1;96,2,3,1;96,3,0,1;96,4,1,2;96,5,1,1;96,6,1,1;96,9,0,1;96,9,1,1;96,11,1,2;96,13,0,1;96,16,0,1;96,16,1,1;96,17,1,3;96,17,3,1;96,18,0,4;96,20,1,6;96,21,0,1;96,21,1,6';
+const FILTER_RECORDS = FILTER_DETAIL.split(';').filter(Boolean).map(row=>row.split(',').map(Number));
 
 // Conteos de asistencias realizadas por fecha de cierre (columna T), hasta el 31 oct 2026.
 const data = {
@@ -473,7 +522,7 @@ const data = {
 const DEPT_KEYS = Object.keys(data);
 
 // Desglose por tipo de AT (22 períodos: ene25=0…oct26=21).
-const tipoData = {
+let tipoData = {
   'Disp. SGR':           [76,65,34,50,56,4,1,3,31,25,10,4,5,53,26,11,80,26,147,46,45,54],
   'Mesa Técnica':        [10,56,34,55,61,52,47,37,26,46,40,44,22,36,66,85,60,41,42,45,67,69],
   'Rev. Saldos':         [0,0,1,7,22,1,0,1,1,10,14,5,1,20,8,10,7,4,28,19,4,5],
@@ -484,13 +533,13 @@ const tipoData = {
   'Asist. Grupos Étnicos':[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
 };
 // Totales por tipo
-const tipoTotales = {
+let tipoTotales = {
   'Disp. SGR':852,'Mesa Técnica':1041,'Rev. Saldos':168,
   'Rev. Proyecto':157,'Rev. Iniciativa':33,'Rev. Ajustes':4,
   'Asist. Proyecto Tipo':2,'Asist. Grupos Étnicos':1,
 };
 // Por departamento
-const tipoDept = {
+let tipoDept = {
   'Disp. SGR':           {cesar:242,guajira:177,atlantico:192,magdalena:241},
   'Mesa Técnica':        {cesar:460,guajira:203,atlantico:102,magdalena:276},
   'Rev. Saldos':         {cesar:21,guajira:18,atlantico:82,magdalena:47},
@@ -513,24 +562,24 @@ function recalc() {
 }
 recalc();
 
-const rankingTop = [
+let rankingTop = [
   {name:'Becerril',             dept:'Cesar',       count:104},
-  {name:'Guajira (Depto)',      dept:'La Guajira',  count:92},
   {name:'Agustin Codazzi',      dept:'Cesar',       count:70},
-  {name:'Cesar (Depto)',        dept:'Cesar',       count:68},
   {name:'San Martin',           dept:'Cesar',       count:57},
   {name:'Santa Marta',          dept:'Magdalena',   count:57},
   {name:'La Jagua de Ibirico',  dept:'Cesar',       count:52},
-  {name:'Atlantico (Depto)',    dept:'Atlántico',   count:51},
-  {name:'Magdalena (Depto)',    dept:'Magdalena',   count:50},
   {name:'La Paz',               dept:'Cesar',       count:45},
   {name:'Ariguani',             dept:'Magdalena',   count:43},
   {name:'San Juan del Cesar',   dept:'La Guajira',  count:43},
   {name:'Cienaga',              dept:'Magdalena',   count:42},
   {name:'Plato',                dept:'Magdalena',   count:42},
   {name:'Manaure',              dept:'La Guajira',  count:41},
+  {name:'Aracataca',            dept:'Magdalena',   count:39},
+  {name:'San Diego',            dept:'Cesar',       count:38},
+  {name:'Pueblo Bello',         dept:'Cesar',       count:37},
+  {name:'Valledupar',           dept:'Cesar',       count:36},
 ];
-const rankingBottom = [
+let rankingBottom = [
   {name:'Soledad',                dept:'Atlántico',  count:1},
   {name:'El Reten',               dept:'Magdalena',  count:5},
   {name:'Sabanas de San Angel',   dept:'Magdalena',  count:6},
@@ -551,6 +600,112 @@ const rankingBottom = [
 /* ─── COLORES ───────────────────────────────────────────── */
 const C = { cesar:'#00104A', guajira:'#4D5880', atlantico:'#CAA214', magdalena:'#6A717F' };
 const deptColor = { 'Cesar':C.cesar, 'La Guajira':C.guajira, 'Atlántico':C.atlantico, 'Magdalena':C.magdalena };
+const DEPT_LABELS = { cesar:'Cesar', guajira:'La Guajira', atlantico:'Atlántico', magdalena:'Magdalena' };
+let municipalitiesDisplayed = 92;
+let departmentsDisplayed = 4;
+
+function populateMunicipalityFilter(selectedValue='all') {
+  const department = document.getElementById('filterDepartment').value;
+  const municipality = document.getElementById('filterMunicipality');
+  municipality.options.length = 1;
+  FILTER_GEO.map((geo,index)=>({geo,index}))
+    .filter(({geo})=>!geo.isDepartment && (department === 'all' || geo.dept === department))
+    .sort((a,b)=>a.geo.name.localeCompare(b.geo.name,'es') || a.geo.dept.localeCompare(b.geo.dept,'es'))
+    .forEach(({geo,index}) => {
+    const option = new Option(
+      department === 'all' ? `${geo.name} — ${DEPT_LABELS[geo.dept]}` : geo.name,
+      String(index),
+    );
+    municipality.add(option);
+  });
+  municipality.value = selectedValue;
+}
+
+function applyFilters() {
+  const selectedDepartment = document.getElementById('filterDepartment').value;
+  const selectedMunicipality = document.getElementById('filterMunicipality').value;
+  const typeSeries = Object.fromEntries(TIPO_KEYS.map(type=>[type,Array(22).fill(0)]));
+  const typeTotals = Object.fromEntries(TIPO_KEYS.map(type=>[type,0]));
+  const typeByDepartment = Object.fromEntries(TIPO_KEYS.map(type=>[
+    type,Object.fromEntries(DEPT_KEYS.map(key=>[key,0])),
+  ]));
+  DEPT_KEYS.forEach(key => {
+    data[key] = {2025:Array(12).fill(0),2026:Array(10).fill(0)};
+  });
+
+  const municipalityTotals = new Map();
+  for (const [geoIndex,periodIndex,typeIndex,count] of FILTER_RECORDS) {
+    const geo = FILTER_GEO[geoIndex];
+    if (!geo || (selectedDepartment !== 'all' && geo.dept !== selectedDepartment)) continue;
+    if (selectedMunicipality !== 'all' && geoIndex !== Number(selectedMunicipality)) continue;
+    const year = periodIndex < 12 ? 2025 : 2026;
+    const monthIndex = periodIndex % 12;
+    const type = TIPO_KEYS[typeIndex];
+    if (!type || monthIndex >= data[geo.dept][year].length) continue;
+
+    data[geo.dept][year][monthIndex] += count;
+    typeSeries[type][periodIndex] += count;
+    typeTotals[type] += count;
+    typeByDepartment[type][geo.dept] += count;
+    if (!geo.isDepartment) municipalityTotals.set(geoIndex,(municipalityTotals.get(geoIndex)||0)+count);
+  }
+  tipoData = typeSeries;
+  tipoTotales = typeTotals;
+  tipoDept = typeByDepartment;
+
+  const rankedMunicipalities = [...municipalityTotals.entries()].map(([index,count]) => ({
+    name:FILTER_GEO[index].name,
+    dept:DEPT_LABELS[FILTER_GEO[index].dept],
+    count,
+  }));
+  rankingTop = [...rankedMunicipalities]
+    .sort((a,b)=>b.count-a.count || a.name.localeCompare(b.name,'es') || a.dept.localeCompare(b.dept,'es'))
+    .slice(0,15);
+  rankingBottom = [...rankedMunicipalities]
+    .sort((a,b)=>a.count-b.count || a.name.localeCompare(b.name,'es') || a.dept.localeCompare(b.dept,'es'))
+    .slice(0,15);
+  municipalitiesDisplayed = new Set([...municipalityTotals.keys()].map(index=>FILTER_GEO[index].name)).size;
+  departmentsDisplayed = DEPT_KEYS.filter(key =>
+    data[key][2025].some(Boolean) || data[key][2026].some(Boolean)
+  ).length;
+
+  const selectedGeo = selectedMunicipality === 'all' ? null : FILTER_GEO[Number(selectedMunicipality)];
+  const summary = selectedGeo
+    ? `${selectedGeo.name} · ${DEPT_LABELS[selectedGeo.dept]}`
+    : selectedDepartment === 'all'
+      ? 'Mostrando todos los departamentos y municipios'
+      : `${DEPT_LABELS[selectedDepartment]} · todos sus municipios`;
+  document.getElementById('filterSummary').textContent = summary;
+  document.getElementById('rankingCoverage').textContent =
+    `${municipalitiesDisplayed} municipios · actividades realizadas hasta el 31 de octubre de 2026`;
+  redrawAll();
+}
+
+function initializeFilters() {
+  const department = document.getElementById('filterDepartment');
+  const municipality = document.getElementById('filterMunicipality');
+  DEPT_KEYS.forEach(key => department.add(new Option(DEPT_LABELS[key],key)));
+  populateMunicipalityFilter();
+
+  department.addEventListener('change',() => {
+    populateMunicipalityFilter();
+    applyFilters();
+  });
+  municipality.addEventListener('change',() => {
+    if (municipality.value !== 'all') {
+      const selectedIndex = Number(municipality.value);
+      department.value = FILTER_GEO[selectedIndex].dept;
+      populateMunicipalityFilter(String(selectedIndex));
+    }
+    applyFilters();
+  });
+  document.getElementById('resetFilters').addEventListener('click',() => {
+    department.value = 'all';
+    populateMunicipalityFilter();
+    applyFilters();
+  });
+  applyFilters();
+}
 
 function isDark() {
   const t = document.documentElement.getAttribute('data-theme');
@@ -566,8 +721,19 @@ class MiniChart {
     this.canvas = document.getElementById(id);
     this.ctx    = this.canvas.getContext('2d');
     this.drawFn = drawFn;
-    this._resize(); this.drawFn(this.ctx, this.W, this.H);
-    window.addEventListener('resize', () => { this._resize(); this.drawFn(this.ctx, this.W, this.H); });
+    this.hitAreas = [];
+    this._resize(); this._draw();
+    this.canvas.addEventListener('pointermove', event => this._showTooltip(event));
+    this.canvas.addEventListener('pointerdown', event => {
+      if (event.pointerType === 'touch') {
+        touchTooltipCanvas = this.canvas;
+        this._showTooltip(event);
+      }
+    });
+    this.canvas.addEventListener('pointerleave', event => {
+      if (event.pointerType !== 'touch') hideChartTooltip();
+    });
+    window.addEventListener('resize', () => { this._resize(); this._draw(); });
   }
   _resize() {
     const dpr = window.devicePixelRatio || 1;
@@ -578,9 +744,79 @@ class MiniChart {
     this.ctx.scale(dpr, dpr);
     this.W = w; this.H = h;
   }
-  redraw() { this._resize(); this.ctx.clearRect(0,0,this.W,this.H); this.drawFn(this.ctx, this.W, this.H); }
+  _draw() {
+    this.hitAreas = [];
+    this.ctx.clearRect(0,0,this.W,this.H);
+    this.drawFn(this.ctx, this.W, this.H, area => {
+      if (area.width > 0 && area.height > 0) this.hitAreas.push(area);
+    });
+    this.canvas.style.cursor = this.hitAreas.length ? 'crosshair' : 'default';
+  }
+  _showTooltip(event) {
+    const rect = this.canvas.getBoundingClientRect();
+    const x = (event.clientX - rect.left) * this.W / rect.width;
+    const y = (event.clientY - rect.top) * this.H / rect.height;
+    const hit = [...this.hitAreas].reverse().find(area =>
+      area.contains
+        ? area.contains(x, y)
+        : x >= area.x && x <= area.x + area.width && y >= area.y && y <= area.y + area.height
+    );
+    if (!hit) {
+      hideChartTooltip();
+      this.canvas.style.cursor = 'default';
+      return;
+    }
+
+    chartTooltipTitle.textContent = hit.label;
+    chartTooltipValue.textContent = typeof hit.value === 'number'
+      ? `${hit.value.toLocaleString('es-CO')} AT`
+      : hit.value;
+    chartTooltip.style.setProperty('--tooltip-color', hit.color || 'var(--accent)');
+    chartTooltip.classList.add('is-visible');
+    let left = event.clientX + 14;
+    let top = event.clientY + 14;
+    const tooltipRect = chartTooltip.getBoundingClientRect();
+    if (left + tooltipRect.width > window.innerWidth - 8) left = event.clientX - tooltipRect.width - 14;
+    if (top + tooltipRect.height > window.innerHeight - 8) top = event.clientY - tooltipRect.height - 14;
+    chartTooltip.style.left = `${Math.max(8, left)}px`;
+    chartTooltip.style.top = `${Math.max(8, top)}px`;
+    this.canvas.style.cursor = 'pointer';
+  }
+  redraw() { this._resize(); this._draw(); }
 }
 const charts = {};
+const chartTooltip = document.createElement('div');
+chartTooltip.className = 'chart-tooltip';
+chartTooltip.setAttribute('role', 'status');
+chartTooltip.setAttribute('aria-live', 'polite');
+const chartTooltipTitle = document.createElement('span');
+chartTooltipTitle.className = 'chart-tooltip-title';
+const chartTooltipValue = document.createElement('span');
+chartTooltipValue.className = 'chart-tooltip-value';
+chartTooltip.append(chartTooltipTitle, chartTooltipValue);
+document.body.append(chartTooltip);
+function hideChartTooltip() { chartTooltip.classList.remove('is-visible'); }
+let touchTooltipCanvas = null;
+document.addEventListener('pointerdown', event => {
+  if (event.pointerType === 'touch' && touchTooltipCanvas && !touchTooltipCanvas.contains(event.target)) {
+    hideChartTooltip();
+    touchTooltipCanvas = null;
+  }
+}, true);
+
+function donutSliceHitArea(cx, cy, innerRadius, outerRadius, start, end, slice) {
+  return {
+    x: cx-outerRadius, y: cy-outerRadius, width: outerRadius*2, height: outerRadius*2,
+    label: slice.label, value: slice.val, color: slice.color,
+    contains(x, y) {
+      const dx = x-cx, dy = y-cy;
+      const distance = Math.hypot(dx, dy);
+      if (distance < innerRadius || distance > outerRadius) return false;
+      const progress = (Math.atan2(dy, dx)-start+Math.PI*2)%(Math.PI*2);
+      return progress <= end-start;
+    },
+  };
+}
 
 function yGrid(ctx, W, H, pad, rows, maxV) {
   ctx.strokeStyle = gridColor(); ctx.lineWidth = 1;
@@ -598,7 +834,7 @@ function xLabels(ctx, labels, W, H, pad, fs=9) {
 }
 
 /* ─── CHART 1: LINE ─────────────────────────────────────── */
-charts.mensual = new MiniChart('chartMensual', (ctx, W, H) => {
+charts.mensual = new MiniChart('chartMensual', (ctx, W, H, addHitArea) => {
   ctx.clearRect(0,0,W,H);
   const pad = {t:18,r:16,b:26,l:36};
   const inner = {w: W-pad.l-pad.r, h: H-pad.t-pad.b};
@@ -632,6 +868,14 @@ charts.mensual = new MiniChart('chartMensual', (ctx, W, H) => {
   area(pts25, '#00104A', .1); area(pts26, '#CAA214', .14);
   line(pts25, '#00104A'); line(pts26, '#CAA214', [5,3]);
   dots(pts25, '#00104A'); dots(pts26, '#CAA214');
+  pts25.forEach((point,i) => addHitArea({
+    x:point.x-8,y:point.y-8,width:16,height:16,
+    label:`${MESES_FULL[i]} 2025`,value:tot25[i],color:'#00104A',
+  }));
+  pts26.forEach((point,i) => addHitArea({
+    x:point.x-8,y:point.y-8,width:16,height:16,
+    label:`${MESES_FULL[i]} 2026`,value:tot26[i],color:'#CAA214',
+  }));
 
   const sepX = pad.l + (12/n)*inner.w;
   ctx.save(); ctx.strokeStyle = gridColor(); ctx.setLineDash([4,4]); ctx.lineWidth=1.5;
@@ -643,10 +887,11 @@ charts.mensual = new MiniChart('chartMensual', (ctx, W, H) => {
 });
 
 /* ─── CHART 2: STACKED BARS ─────────────────────────────── */
-charts.deptMes = new MiniChart('chartDeptMes', (ctx, W, H) => {
+charts.deptMes = new MiniChart('chartDeptMes', (ctx, W, H, addHitArea) => {
   ctx.clearRect(0,0,W,H);
   const pad = {t:18,r:10,b:26,l:36};
   const keys = ['cesar','guajira','atlantico','magdalena'];
+  const deptNames = {cesar:'Cesar',guajira:'La Guajira',atlantico:'Atlántico',magdalena:'Magdalena'};
   const all  = {
     cesar:    [...data.cesar[2025],    ...data.cesar[2026]],
     guajira:  [...data.guajira[2025],  ...data.guajira[2026]],
@@ -664,8 +909,15 @@ charts.deptMes = new MiniChart('chartDeptMes', (ctx, W, H) => {
     let bottom = H - pad.b;
     keys.forEach(k => {
       const bh = inner.h * (all[k][i]/maxV);
+      const barX = pad.l + i*gap + gap*.16;
+      const barY = bottom-bh;
       ctx.fillStyle = C[k];
-      ctx.fillRect(pad.l + i*gap + gap*.16, bottom-bh, bw, bh);
+      ctx.fillRect(barX, barY, bw, bh);
+      addHitArea({
+        x:barX,y:barY,width:bw,height:bh,
+        label:`${allMonths[i].label} · ${deptNames[k]}`,
+        value:all[k][i],color:C[k],
+      });
       bottom -= bh;
     });
   });
@@ -679,7 +931,7 @@ charts.deptMes = new MiniChart('chartDeptMes', (ctx, W, H) => {
 });
 
 /* ─── CHART 3: DONUT ────────────────────────────────────── */
-charts.donut = new MiniChart('chartDonut', (ctx, W, H) => {
+charts.donut = new MiniChart('chartDonut', (ctx, W, H, addHitArea) => {
   ctx.clearRect(0,0,W,H);
   const sum = k => [...data[k][2025],...data[k][2026]].reduce((a,b)=>a+b,0);
   const slices = [
@@ -697,10 +949,10 @@ charts.donut = new MiniChart('chartDonut', (ctx, W, H) => {
     ctx.beginPath(); ctx.moveTo(cx,cy); ctx.arc(cx,cy,R,ang,ang+sw); ctx.closePath();
     ctx.fillStyle = s.color; ctx.fill();
     const mid = ang+sw/2;
-    const lx=cx+(R*.7)*Math.cos(mid), ly=cy+(R*.7)*Math.sin(mid);
     ctx.fillStyle='#fff'; ctx.font='bold 11px "Nunito Sans", "Segoe UI", sans-serif';
     ctx.textAlign='center'; ctx.textBaseline='middle';
-    ctx.fillText(Math.round(s.val/total*100)+'%', lx, ly);
+    ctx.fillText(Math.round(s.val/total*100)+'%', cx+(R*.7)*Math.cos(mid), cy+(R*.7)*Math.sin(mid));
+    addHitArea(donutSliceHitArea(cx,cy,r,R,ang,ang+sw,s));
     ang+=sw;
   });
   ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2);
@@ -719,7 +971,7 @@ charts.donut = new MiniChart('chartDonut', (ctx, W, H) => {
 });
 
 /* ─── CHART 4: BARRAS COMPARATIVO ──────────────────────── */
-charts.comparativo = new MiniChart('chartComparativo', (ctx, W, H) => {
+charts.comparativo = new MiniChart('chartComparativo', (ctx, W, H, addHitArea) => {
   ctx.clearRect(0,0,W,H);
   const pad={t:18,r:10,b:26,l:36};
   const n=Math.min(tot26.length,12), t25=tot25.slice(0,n);
@@ -731,14 +983,17 @@ charts.comparativo = new MiniChart('chartComparativo', (ctx, W, H) => {
   [...Array(n)].forEach((_,i) => {
     const x0=pad.l+i*gap+gap*.05;
     const h25=inner.h*(t25[i]/maxV), h26=inner.h*(tot26[i]/maxV);
-    ctx.fillStyle='rgba(0,16,74,.76)'; ctx.fillRect(x0,H-pad.b-h25,bw,h25);
-    ctx.fillStyle='#CAA214'; ctx.fillRect(x0+bw+4,H-pad.b-h26,bw,h26);
+    const y25=H-pad.b-h25, x26=x0+bw+4, y26=H-pad.b-h26;
+    ctx.fillStyle='rgba(0,16,74,.76)'; ctx.fillRect(x0,y25,bw,h25);
+    addHitArea({x:x0,y:y25,width:bw,height:h25,label:`${MESES_FULL[i]} 2025`,value:t25[i],color:'#00104A'});
+    ctx.fillStyle='#CAA214'; ctx.fillRect(x26,y26,bw,h26);
+    addHitArea({x:x26,y:y26,width:bw,height:h26,label:`${MESES_FULL[i]} 2026`,value:tot26[i],color:'#CAA214'});
   });
   xLabels(ctx, MESES.slice(0,n), W, H, pad, 9.5);
 });
 
 /* ─── CHART 5: CRECIMIENTO % ────────────────────────────── */
-charts.crecimiento = new MiniChart('chartCrecimiento', (ctx, W, H) => {
+charts.crecimiento = new MiniChart('chartCrecimiento', (ctx, W, H, addHitArea) => {
   ctx.clearRect(0,0,W,H);
   const pad={t:24,r:10,b:26,l:42};
   const n=Math.min(tot26.length,12), t25=tot25.slice(0,n);
@@ -767,8 +1022,15 @@ charts.crecimiento = new MiniChart('chartCrecimiento', (ctx, W, H) => {
       return;
     }
     const bh=inner.h/2*(Math.abs(pct)/absMax);
-    ctx.fillStyle = pct>=0 ? '#CAA214' : '#D50032';
-    pct>=0 ? ctx.fillRect(x,midY-bh,bw,bh) : ctx.fillRect(x,midY,bw,bh);
+    const color=pct>=0 ? '#CAA214' : '#D50032';
+    const barY=pct>=0 ? midY-bh : midY;
+    ctx.fillStyle = color;
+    ctx.fillRect(x,barY,bw,bh);
+    addHitArea({
+      x,y:barY,width:bw,height:bh,
+      label:`${MESES_FULL[i]} · variación 2026 vs. 2025`,
+      value:`${pct>0?'+':''}${pct}%`,color,
+    });
     ctx.font='bold 9.5px "Nunito Sans", "Segoe UI", sans-serif'; ctx.textAlign='center';
     ctx.fillText((pct>0?'+':'')+pct+'%', x+bw/2, pct>=0 ? midY-bh-4 : midY+bh+12);
   });
@@ -830,8 +1092,6 @@ buildRanking('rankingTop',    rankingTop,    '');
 buildRanking('rankingBottom', rankingBottom, 'purple');
 
 /* ─── KPIs ──────────────────────────────────────────────── */
-const MUNICIPIOS_ATENDIDOS = 96;
-
 function updateKPIs() {
   const n26 = data.cesar[2026].length;
   const sum = values => values.reduce((a,b)=>a+b,0);
@@ -845,8 +1105,8 @@ function updateKPIs() {
     key,
     total:sum(data[key][2025])+sum(data[key][2026]),
   })).sort((a,b)=>b.total-a.total);
-  const leader = deptTotals[0];
-  const municipalityLeader = rankingTop[0];
+  const leader = deptTotals.find(dept=>dept.total>0) || deptTotals[0];
+  const municipalityLeader = rankingTop[0] || {name:'—',dept:'—',count:0};
   const periodo2026 = MESES_FULL[n26-1];
   const periodoComparable = MESES[Math.min(n26,12)-1];
 
@@ -854,7 +1114,11 @@ function updateKPIs() {
   document.getElementById('kpi2025').textContent = s25.toLocaleString('es-CO');
   document.getElementById('kpi2026').textContent = s26.toLocaleString('es-CO');
   document.getElementById('kpi2026Period').textContent = `Enero – ${periodo2026} 2026`;
-  document.getElementById('kpiMunicipalities').textContent = MUNICIPIOS_ATENDIDOS.toLocaleString('es-CO');
+  document.getElementById('kpiMunicipalities').textContent = municipalitiesDisplayed.toLocaleString('es-CO');
+  document.getElementById('kpiDepartments').textContent = departmentsDisplayed.toLocaleString('es-CO');
+  document.getElementById('kpiDepartmentsDetail').textContent = DEPT_KEYS
+    .filter(key=>data[key][2025].some(Boolean) || data[key][2026].some(Boolean))
+    .map(key=>deptLabels[key]).join(', ') || 'Sin registros';
   document.getElementById('kpiLeader').textContent = deptLabels[leader.key];
   document.getElementById('kpiLeaderDetail').textContent =
     `${leader.total.toLocaleString('es-CO')} AT · ${total ? (leader.total/total*100).toLocaleString('es-CO',{maximumFractionDigits:1}) : '0'}% del total`;
@@ -867,9 +1131,8 @@ function updateKPIs() {
   document.getElementById('comparativoPeriod').textContent = `Período comparable Ene–${periodoComparable}`;
   document.getElementById('comparativoHeadline').textContent =
     `Ene–${periodoComparable} 2025 vs. Ene–${periodoComparable} 2026`;
-  document.getElementById('footerRegistros').textContent =
-    `Fuente: Sistema Integrado de Información y Asistencia Técnica Territorial · ${total.toLocaleString('es-CO')} AT realizadas · 4 departamentos`;
-  document.getElementById('footerPeriod').textContent = `Fecha de cierre · Corte 31 de octubre de 2026`;
+  document.getElementById('footerRegistros').textContent = 'Fuente: SIIAT';
+  document.getElementById('footerPeriod').textContent = 'CORTE: 31 OCTUBRE 2026';
 }
 
 /* ─── REDRAW ALL ────────────────────────────────────────── */
@@ -1036,10 +1299,9 @@ const TIPO_COLORS = {
   'Asist. Proyecto Tipo':'#E0B400',
   'Asist. Grupos Étnicos':'#D2D5DC',
 };
-const TIPO_KEYS = Object.keys(TIPO_COLORS);
 
 /* ─── CHART TIPO/MES: STACKED BARS ──────────────────────── */
-charts.tipoMes = new MiniChart('chartTipoMes', (ctx, W, H) => {
+charts.tipoMes = new MiniChart('chartTipoMes', (ctx, W, H, addHitArea) => {
   ctx.clearRect(0,0,W,H);
   const pad = {t:18,r:10,b:26,l:36};
   const n = allMonths.length;
@@ -1056,8 +1318,11 @@ charts.tipoMes = new MiniChart('chartTipoMes', (ctx, W, H) => {
       const v = tipoData[k]?.[i] || 0;
       if (!v) return;
       const bh = inner.h*(v/maxV);
+      const barX=pad.l+i*gap+gap*.15;
+      const barY=bottom-bh;
       ctx.fillStyle = TIPO_COLORS[k];
-      ctx.fillRect(pad.l+i*gap+gap*.15, bottom-bh, bw, bh);
+      ctx.fillRect(barX, barY, bw, bh);
+      addHitArea({x:barX,y:barY,width:bw,height:bh,label:`${allMonths[i].label} · ${k}`,value:v,color:TIPO_COLORS[k]});
       bottom -= bh;
     });
   });
@@ -1080,7 +1345,7 @@ charts.tipoMes = new MiniChart('chartTipoMes', (ctx, W, H) => {
 });
 
 /* ─── CHART TIPO DONUT ───────────────────────────────────── */
-charts.tipoDonut = new MiniChart('chartTipoDonut', (ctx, W, H) => {
+charts.tipoDonut = new MiniChart('chartTipoDonut', (ctx, W, H, addHitArea) => {
   ctx.clearRect(0,0,W,H);
   const slices = TIPO_KEYS.map(k=>({label:k,val:tipoTotales[k]||0,color:TIPO_COLORS[k]}));
   const total = slices.reduce((s,x)=>s+x.val,0);
@@ -1097,6 +1362,7 @@ charts.tipoDonut = new MiniChart('chartTipoDonut', (ctx, W, H) => {
       ctx.textAlign='center'; ctx.textBaseline='middle';
       ctx.fillText(Math.round(s.val/total*100)+'%', cx+(R*.7)*Math.cos(mid), cy+(R*.7)*Math.sin(mid));
     }
+    addHitArea(donutSliceHitArea(cx,cy,r,R,ang,ang+sw,s));
     ang+=sw;
   });
   ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2); ctx.fillStyle=surfaceColor(); ctx.fill();
@@ -1115,12 +1381,12 @@ charts.tipoDonut = new MiniChart('chartTipoDonut', (ctx, W, H) => {
 });
 
 /* ─── CHART TIPO×DEPT: GROUPED BARS ─────────────────────── */
-charts.tipoDept = new MiniChart('chartTipoDept', (ctx, W, H) => {
+charts.tipoDept = new MiniChart('chartTipoDept', (ctx, W, H, addHitArea) => {
   ctx.clearRect(0,0,W,H);
   const pad={t:18,r:10,b:30,l:40};
   const depts=[{k:'cesar',label:'Cesar',c:C.cesar},{k:'guajira',label:'La Guajira',c:C.guajira},{k:'atlantico',label:'Atlántico',c:C.atlantico},{k:'magdalena',label:'Magdalena',c:C.magdalena}];
-  const tipos=TIPO_KEYS.filter(k=>tipoTotales[k]>5); // solo los relevantes
-  const maxV=Math.ceil(Math.max(...tipos.flatMap(t=>depts.map(d=>tipoDept[t]?.[d.k]||0)))/20)*20;
+  const tipos=TIPO_KEYS.filter(k=>tipoTotales[k]>0);
+  const maxV=Math.max(20,Math.ceil(Math.max(0,...tipos.flatMap(t=>depts.map(d=>tipoDept[t]?.[d.k]||0)))/20)*20);
   const inner={w:W-pad.l-pad.r, h:H-pad.t-pad.b};
   yGrid(ctx,W,H,pad,4,maxV);
 
@@ -1130,7 +1396,9 @@ charts.tipoDept = new MiniChart('chartTipoDept', (ctx, W, H) => {
       const v=tipoDept[t]?.[d.k]||0;
       const bh=inner.h*(v/maxV);
       const x=pad.l+ti*groupW+di*bw+bw*.4;
-      ctx.fillStyle=d.c; ctx.fillRect(x,H-pad.b-bh,bw*.9,bh);
+      const y=H-pad.b-bh;
+      ctx.fillStyle=d.c; ctx.fillRect(x,y,bw*.9,bh);
+      addHitArea({x,y,width:bw*.9,height:bh,label:`${d.label} · ${t}`,value:v,color:d.c});
     });
     // Label tipo bajo grupo
     ctx.fillStyle=textColor(); ctx.font='9px "Nunito Sans", "Segoe UI", sans-serif'; ctx.textAlign='center';
@@ -1146,7 +1414,7 @@ charts.tipoDept = new MiniChart('chartTipoDept', (ctx, W, H) => {
   }
 });
 
-updateKPIs();
+initializeFilters();
 
 /* ─── PDF EXPORT ────────────────────────────────────────── */
 function generarPDF() {

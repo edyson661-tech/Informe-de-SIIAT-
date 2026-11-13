@@ -145,7 +145,12 @@ body { background: var(--bg); color: var(--text); font-family: var(--font-body);
 .chart-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
 .chart-grid-3 { display: grid; grid-template-columns: 2fr 1fr; gap: 18px; }
 .chart-panel  { background: var(--surface); border: 1px solid var(--border); border-top: 3px solid var(--primary); border-radius: var(--radius); box-shadow: var(--shadow); padding: 20px 22px 16px; }
+.chart-panel-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 3px; }
 .chart-panel-title    { font-family: var(--font-display); font-size: .78rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 3px; }
+.chart-panel-heading .chart-panel-title { margin-bottom: 0; }
+.chart-label-toggle { border: 1px solid var(--border); border-radius: 5px; padding: 6px 9px; background: var(--surface); color: var(--text); font: 600 .72rem var(--font-display); cursor: pointer; }
+.chart-label-toggle:hover { border-color: var(--accent); }
+.chart-label-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .chart-panel-headline { font-family: var(--font-body); font-size: 1rem; font-weight: 600; color: var(--text); margin-bottom: 16px; text-wrap: balance; }
 canvas { display: block; width: 100% !important; }
 .chart-tooltip {
@@ -323,7 +328,10 @@ tbody tr:hover td { background: var(--surface-2); }
   </div>
 
   <div class="chart-panel" style="margin-bottom:18px">
-    <div class="chart-panel-title">Evolución mensual</div>
+    <div class="chart-panel-heading">
+      <div class="chart-panel-title">Evolución mensual</div>
+      <button class="chart-label-toggle" id="toggleMonthlyLabels" type="button" aria-pressed="false">Mostrar etiquetas</button>
+    </div>
     <div class="chart-panel-headline">Asistencias técnicas mes a mes — Región Caribe 1 (4 departamentos)</div>
     <canvas id="chartMensual" height="210"></canvas>
     <div class="chart-legend">
@@ -741,7 +749,7 @@ class MiniChart {
     const h   = +this.canvas.getAttribute('height');
     this.canvas.width  = w * dpr; this.canvas.height = h * dpr;
     this.canvas.style.width = w+'px'; this.canvas.style.height = h+'px';
-    this.ctx.scale(dpr, dpr);
+    this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     this.W = w; this.H = h;
   }
   _draw() {
@@ -834,6 +842,7 @@ function xLabels(ctx, labels, W, H, pad, fs=9) {
 }
 
 /* ─── CHART 1: LINE ─────────────────────────────────────── */
+let monthlyValueLabelsVisible = false;
 charts.mensual = new MiniChart('chartMensual', (ctx, W, H, addHitArea) => {
   ctx.clearRect(0,0,W,H);
   const pad = {t:18,r:16,b:26,l:36};
@@ -868,6 +877,24 @@ charts.mensual = new MiniChart('chartMensual', (ctx, W, H, addHitArea) => {
   area(pts25, '#00104A', .1); area(pts26, '#CAA214', .14);
   line(pts25, '#00104A'); line(pts26, '#CAA214', [5,3]);
   dots(pts25, '#00104A'); dots(pts26, '#CAA214');
+  if (monthlyValueLabelsVisible) {
+    ctx.save();
+    ctx.fillStyle = textColor();
+    ctx.strokeStyle = surfaceColor();
+    ctx.lineWidth = 3;
+    ctx.font = '8.5px "Nunito Sans", "Segoe UI", sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    [ [pts25, tot25], [pts26, tot26] ].forEach(([points, values]) => {
+      points.forEach((point, i) => {
+        const label = values[i].toLocaleString('es-CO');
+        const y = point.y - 9 >= pad.t ? point.y - 9 : point.y + 12;
+        ctx.strokeText(label, point.x, y);
+        ctx.fillText(label, point.x, y);
+      });
+    });
+    ctx.restore();
+  }
   pts25.forEach((point,i) => addHitArea({
     x:point.x-8,y:point.y-8,width:16,height:16,
     label:`${MESES_FULL[i]} 2025`,value:tot25[i],color:'#00104A',
@@ -884,6 +911,13 @@ charts.mensual = new MiniChart('chartMensual', (ctx, W, H, addHitArea) => {
   ctx.fillText('→ 2026', sepX+4, pad.t+11);
 
   xLabels(ctx, allMonths.map(m=>m.label), W, H, pad, 8.5);
+});
+const monthlyLabelsToggle = document.getElementById('toggleMonthlyLabels');
+monthlyLabelsToggle.addEventListener('click', () => {
+  monthlyValueLabelsVisible = !monthlyValueLabelsVisible;
+  monthlyLabelsToggle.setAttribute('aria-pressed', String(monthlyValueLabelsVisible));
+  monthlyLabelsToggle.textContent = monthlyValueLabelsVisible ? 'Ocultar etiquetas' : 'Mostrar etiquetas';
+  charts.mensual.redraw();
 });
 
 /* ─── CHART 2: STACKED BARS ─────────────────────────────── */
